@@ -28,7 +28,6 @@ if (document.location.pathname == '/study-unusual-monitor/unnormalanalysis') {
                 document.getElementById("revokeConfirmBtn").click();
             })
         } else {
-            alert('暂无需要撤销处理的');
             if (nusual.length != 0) {
                 console.log(nusual);
                 let nusuals = Array.from(nusual);
@@ -40,10 +39,13 @@ if (document.location.pathname == '/study-unusual-monitor/unnormalanalysis') {
 
             } else {
                 alert('暂无需要标为正常的');
-                setTimeout(window.close())
+                
             }
         }
-    }, 670)
+        if(revoke.length==0&&nusual.length==0){
+            setTimeout(window.close())
+        }
+    }, 2000)
 
 } else if (location.pathname == '/keeper/study-monitor/unnormal') {
     $('a:contains(40条/页)').click();
