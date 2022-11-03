@@ -814,10 +814,11 @@
                                                 if (_w.top.unrivalReviewMode ==
                                                     '1') {
                                                     logs.addLog('视频已观看完毕', 'green');
+                                                    
                                                 } else {
                                                     logs.addLog('视频已观看完毕，但视频任务未完成',
                                                         'red');
-                                                    _l.reload()
+                                                    _l.reload();
                                                 }
                                                 missionList['m' + item['jobid']][
                                                     'running'
@@ -926,6 +927,7 @@
                                     logs.addLog('文档任务已完成', 'green');
                                 } else {
                                     logs.addLog('文档已阅读完成，但任务点未完成', 'red');
+                                    _l.reload();
                                 }
 
                             } catch (err) {
