@@ -186,7 +186,7 @@
         _w.top.unrivalReviewMode = GM_getValue('unrivalreview', '0') || '0';
         _w.top.unrivalDoWork = GM_getValue('unrivaldowork', '1') || '1';
         _w.top.unrivalAutoSubmit = GM_getValue('unrivalautosubmit', '1') || '1';
-        _w.top.unrivalAutoSave = GM_getValue('unrivalautosave', '0') || '0';
+        _w.top.unrivalAutoSave = GM_getValue('unrivalautosave', '1') || '1';
     } catch (e) { }
     if (_l.href.indexOf("knowledge/cards") > 0) {
         let allowBackground = false,
