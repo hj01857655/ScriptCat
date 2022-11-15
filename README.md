@@ -1,5 +1,5 @@
-# GDUF-QZAPI
-广东金融学院强智教务系统API
+# CSMU-QZAPI
+长沙医学院强智教务系统API
 
 根据智校园APP抓包得出，兼容可使用智校园APP的其它学校的教务系统。\
 除authUser API外，记得带上登录态。
