@@ -6,7 +6,7 @@
 // @author       Czy
 // @match        http://*.csmu.edu.cn:8099/jsxsd/
 // @match        http://*.csmu.edu.cn:8099/
-// @grant        none
+// @match        http://10.0.4.146/jsxsd/*
 // @github       https://github.com/WindrunnerMax/SWVerifyCode
 // @date         2020/02/18
 // ==/UserScript==
@@ -153,6 +153,7 @@ function main(){
 (function() {
     'use strict';
     var img = document.getElementById("SafeCodeImg");
+    // img.onload = function(){main()};
     img.onload = function(){main()};
     img.src = img.src;
 })();
