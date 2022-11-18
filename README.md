@@ -10,7 +10,7 @@
 ## API列表
 ### authUser
 登录帐号\
-<code>http://oa.csmu.edu.cn:8099/app.do?method=authUser&xh=#学号#&pwd=#密码#</code>
+<code>http://oa.csmu.edu.cn:8099/app.do?method=authUser&xh=20220182&pwd=#密码#</code>
 
 **返回值**
 > flag：未知\
@@ -22,7 +22,7 @@ msg：登录状态
 
 ### getStudentIdInfo 暂500错误
 获取学号信息\
-<code>http://oa.csmu.edu.cn:8099/app.do?method=getStudentIdInfo&xh=#学号#</code>
+<code>http://oa.csmu.edu.cn:8099/app.do?method=getStudentIdInfo&xh=20220182</code>
 
 **返回值**
 > bjid：未知\
@@ -42,7 +42,7 @@ xnxqh：学年
 
 ### getKbcxAzc 暂500错误
 获取课程表\
-<code>http://oa.csmu.edu.cn:8099/app.do?method=getKbcxAzc&xh=#学号#&xnxqid=#学年#&zc=#未知，与getCurrentTime返回的zc相同#</code>
+<code>http://oa.csmu.edu.cn:8099/app.do?method=getKbcxAzc&xh=20220182&xnxqid=#学年#&zc=#未知，与getCurrentTime返回的zc相同#</code>
 
 **返回值**\
 返回JSON数组
@@ -120,7 +120,7 @@ zws：未知，和yxzws相同
 3
 ### getUserInfo   暂500错误
 获取帐号信息\
-<code>http://oa.csmu.edu.cn:8099/app.do?method=getUserInfo&xh=#学号#</code>
+<code>http://oa.csmu.edu.cn:8099/app.do?method=getUserInfo&xh=20220182</code>
 
 **返回值**
 > bj：班级\
@@ -142,7 +142,7 @@ zymc：专业名称
 
 ### getXnxq
 获取学年和学期信息\
-<code>http://oa.csmu.edu.cn:8099/app.do?method=getXnxq&xh=#学号#</code>
+<code>http://oa.csmu.edu.cn:8099/app.do?method=getXnxq&xh=20220182</code>
 
 **返回值**\
 返回JSON数组
@@ -152,21 +152,21 @@ xqmc：学期名称
 
 ### getCjcx
 获取成绩信息\
-<code>http://oa.csmu.edu.cn:8099/app.do?method=getCjcx&xh=#学号#&xnxqid=#学期学年ID#</code>
+<code>http://oa.csmu.edu.cn:8099/app.do?method=getCjcx&xh=20220182&xnxqid=#学期学年ID#</code>
 
 **返回值**\
 条件所限，尚未明晰
 
 ### getKscx
 获取考试信息\
-<code>http://oa.csmu.edu.cn:8099/app.do?method=getKscx&xh=#学号#</code>
+<code>http://oa.csmu.edu.cn:8099/app.do?method=getKscx&xh=20220182</code>
 
 **返回值**\
 条件所限，尚未明晰
 
 ### getEarlyWarnInfo
 获取学籍预警信息\
-<code>http://oa.csmu.edu.cn:8099/app.do?method=getEarlyWarnInfo&xh=#学号#&history=#见下方说明#</code>
+<code>http://oa.csmu.edu.cn:8099/app.do?method=getEarlyWarnInfo&xh=20220182&history=#见下方说明#</code>
 
 **history取值**
 > 0：当前预警\
