@@ -20,7 +20,7 @@ userdwmc：学院名称\
 usertype：用户类别\
 msg：登录状态
 
-### getStudentIdInfo
+### getStudentIdInfo 暂500错误
 获取学号信息\
 <code>http://oa.csmu.edu.cn:8099/app.do?method=getStudentIdInfo&xh=#学号#</code>
 
@@ -30,7 +30,7 @@ ndzyid：未知\
 yxid：未知\
 xxdm：未知
 
-### getCurrentTime
+### getCurrentTime 
 获取当前时间、周次、学年等信息\
 <code>http://oa.csmu.edu.cn:8099/app.do?method=getCurrentTime&currDate=#查询日期#</code>
 
@@ -40,7 +40,7 @@ e_time：本周结束日期\
 s_time：本周起始日期\
 xnxqh：学年
 
-### getKbcxAzc
+### getKbcxAzc 暂500错误
 获取课程表\
 <code>http://oa.csmu.edu.cn:8099/app.do?method=getKbcxAzc&xh=#学号#&xnxqid=#学年#&zc=#未知，与getCurrentTime返回的zc相同#</code>
 
@@ -55,7 +55,7 @@ kkzc：课程教学周\
 kssj：上课时间\
 sjbz：未知
 
-### getKxJscx
+### getKxJscx 
 获取空教室\
 <code>http://oa.csmu.edu.cn:8099/app.do?method=getKxJscx&time=#查询日期#&idleTime=#见下方说明#</code>
 
@@ -76,7 +76,7 @@ xqmc：校区\
 yxzws：教室容量\
 zws：未知，和yxzws相同
 
-### getXqcx
+### getXqcx 
 获取校区\
 <code>http://oa.csmu.edu.cn:8099/app.do?method=getXqcx</code>
 
@@ -118,7 +118,7 @@ xqmc：校区\
 yxzws：教室容量\
 zws：未知，和yxzws相同
 3
-### getUserInfo
+### getUserInfo   暂500错误
 获取帐号信息\
 <code>http://oa.csmu.edu.cn:8099/app.do?method=getUserInfo&xh=#学号#</code>
 
