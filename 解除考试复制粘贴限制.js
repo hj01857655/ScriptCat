@@ -6,40 +6,67 @@
 // @version             2.0
 // @connect             *
 // @require             https://cdn.jsdelivr.net/npm/sweetalert2@11
+// @match               *://*.chaoxing.com/mycourse/studentstudy*
 // @match               *://*.chaoxing.com/knowledge/cards*
+// @match               *://*.chaoxing.com/ananas/modules/video/index.html
 // @match               *://*.chaoxing.com/ananas/modules/work/index.html*
 // @match               *://*.chaoxing.com/work/doHomeWorkNew*
 // @match               *://*.chaoxing.com/mooc2/work/dowork*
 // @match               *://*.chaoxing.com/exam/test/reVersionTestStartNew*
 // @match               *://*.chaoxing.com/mooc2/exam/preview*
+
 // @grant               unsafeWindow
 // @grant               GM_xmlhttpRequest
 // @grant               GM_getValue
 // @grant               GM_setValue
 // @grant               GM_setClipboard
 // @license             MIT
-// @require             https://cdn.jsdelivr.net/npm/sweetalert2@11
 // ==/UserScript==
-
+/* globals  $ */
 
 let _self = unsafeWindow,
     url = location.pathname,
-    top = _self
-console.log(url)
-!function () {
-    // 3.增加破解无限Debugger
-    var constructorHook = constructor;
-    Function.prototype.constructor = function (s) {
-        if (s == "debugger") {
-            return function () { }
+    top = _self;
+console.log(location.href)
+
+
+unsafeWindow.appendChild = unsafeWindow.Element.prototype.appendChild;
+unsafeWindow.Element.prototype.appendChild = function () {
+    try {
+        if (arguments[0].src.indexOf('detect.chaoxing.com') > 0) {
+            return;
         }
-        return constructorHook(s);
+    } catch (e) { }
+    unsafeWindow.appendChild.apply(this, arguments);
+};
+
+var scripts = $(document.getElementsByTagName('script'))
+for (let i = 0, l = scripts.length; i < l; i++) {
+    if (scripts[i].src == 'https://detect.chaoxing.com/api/passport2-onlineinfo.js?key=true&refer=http://i.mooc.chaoxing.com' || scripts[i].src.indexOf('detect.chaoxing.com') != -1) {
+        scripts[i].src = '';
+        scripts[i].remove();
     }
 }
+// if (!!location.pathname.match('/mycourse/studentstudy')) {
+//     _self.appendChild = _self.Element.prototype.appendChild;
+//     _self.Element.prototype.appendChild = function () {
+//         try {
+//             if (arguments[0].src.indexOf('detect.chaoxing.com') > 0) {
+//                 return;
+//             }
+//         } catch (e) { }
+//         _self.appendChild.apply(this, arguments);
+//     };
+
+
+
+// }
+
+
 //考试、作业
 if (['/exam/test/reVersionTestStartNew', '/mooc2/exam/preview', '/mooc2/work/dowork'].includes(location.pathname)) {
     //1. 更改超星不可粘贴为可粘贴
-    setInterval(relieve(), 100)
+    setInterval(relieve(), 1000)
     $.toast({ type: 'success', content: '已解除复制、粘贴限制！', time: 1000 });
     //2. 添加双击题目隐式自动复制题目到粘贴板
     let problems = $(".mark_name")
@@ -49,48 +76,41 @@ if (['/exam/test/reVersionTestStartNew', '/mooc2/exam/preview', '/mooc2/work/dow
         $node.click(function () {
             str = $(this).text().replace($(this).children("span").text(), "")
             str = str.substr(str.indexOf(".") + 2)
-            $.toast({ type: 'success', content: '复制成功', time: 1000 });
             GM_setClipboard(str)
         })
     }
 } else if (['/work/doHomeWorkNew'].includes(url)) {//章节测试
-    setInterval(relieve(), 100)
-    console.log(UE.instants)
+    setInterval(function () {
+        relieve();
+        unsafeWindow.aalert = unsafeWindow.alert;
+        unsafeWindow.alert = (msg) => {
+            if (msg == '保存成功') {
+                return;
+            }
+            aalert(msg);
+        }
+    }, 10000)
     let problems = $('.TiMu')
     for (let i = 0; i < problems.length; i++) {
         $node = $(problems[i]).children('div.Zy_TItle.clearfix').children('div.clearfix')
         $node.attr("style", "cursor:hand")
         $node.click(function () {
+            _self.noSubmit();
             try {
-                console.log(this)
-                //console.log($(this).children('div.Zy_TItle.clearfix').children('div.clearfix').text().replace(/^【.*?】\s*/, '').replace(/。$/, '').replace('？', ''))
-                //str = $(this).children('div.Zy_TItle.clearfix').children('div.clearfix').text().replace(/^【.*?】\s*/, '').replace(/。$/, '').replace('？', '')
-                str = $(this).text().replace(/^【.*?】\s*/, '').replace(/。$/, '').replace('？', '').replace(/\s*（\d+\.\d+分）$/, '')
-                // str = $(this).children('div.Zy_TItle.clearfix').children('div.clearfix.font-cxsecret').text().replace(/^【.*?】\s*/, '').replace(/。$/, '').replace('？', '')
-                //str=repttf($(this).children('div.Zy_TItle.clearfix').children('div.clearfix.font-cxsecret').text()).replace(/^【.*?】\s*/, '').replace(/。$/, '').replace('？','')
+                str = $(this).text().replace(/^【.*?】\s*/, '').replace(/。$/, '').replace('？', '').replace(/\s*（\d+\.\d+分）$/, '').replaceAll('javascript:void(0);', '').replaceAll("&nbsp;", '').replaceAll("，", ',').replaceAll(
+                    "。", '.').replaceAll("：", ':').replaceAll("；",
+                        ';').replaceAll("？", '?').replaceAll("（", '(').replaceAll("）", ')').replaceAll("“", '"')
+                    .replaceAll("”", '"').replaceAll("！", '!').replaceAll("-", ' ').replace(/(<([^>]+)>)/ig, '')
+                    .replace(/^\s+/ig, '').replace(/\s+$/ig, '')
+
                 GM_setClipboard(str)
 
-                Swal.fire({
-                    icon: 'success',
-                    title: '复制成功',
-                    text: str,
-                    showConfirmButton: false,
-                    timer: 200
-                })
-                _self.noSubmit();
             } catch (e) {
-                _self.noSubmit();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'error',
-                    text: e,
-                    showConfirmButton: false,
-                    timer: 200
-                })
             }
-
         })
     }
+
+
 }
 
 function relieve() {
@@ -98,5 +118,8 @@ function relieve() {
         // UE.instants[ins].removeListener('beforepaste', editorPaste);//过时了
         UE.instants[ins].removeListener('beforepaste', myEditor_paste);
     }
+
+
+
 }
 
