@@ -22,17 +22,17 @@
 // @resource            Table https://www.forestpolice.org/ttf/2.0/table.json
 // ==/UserScript==
 
- 
+
 /*********************************自定义配置区******************************************************** */
 var setting = {
     showBox: 1,     // 显示脚本浮窗，0为关闭，1为开启，不建议关闭
     maskImg: 1,     // 显示皮卡丘，0为关闭，1为开启，默认开启，无实质作用，只是为了减少睿智问题
 
-    task: 0,        // 只处理任务点任务，0为关闭，1为开启
+    task: 1,        // 只处理任务点任务，0为关闭，1为开启
 
     video: 1,       // 处理视频，0为关闭，1为开启
     audio: 1,       // 处理音频，0为关闭，1为开启
-    rate: 1,        // 视频/音频倍速，0为秒过，1为正常速率，最高16倍
+    rate: 20,        // 视频/音频倍速，0为秒过，1为正常速率，最高16倍
     review: 0,      // 复习模式，0为关闭，1为开启可以补挂视频时长
 
     work: 1,        // 测验自动处理，0为关闭，1为开启，开启将会处理测验，关闭会跳过测验
@@ -80,7 +80,7 @@ if (_l.hostname == 'i.mooc.chaoxing.com' || _l.hostname == "i.chaoxing.com") {
     setTimeout(() => { autoLogin() }, 1000)
 } else if (_l.pathname.includes('/mycourse/studentstudy')) {
     showBox()
-    $('#ne-21log',window.parent.document).html('初始化完毕！Author Ne-21 E-mail：nawlgzs@gmail.com')
+    $('#ne-21log', window.parent.document).html('初始化完毕！Author Ne-21 E-mail：nawlgzs@gmail.com')
 } else if (_l.pathname.includes('/knowledge/cards')) {
     var params = getTaskParams()
     if (params == null || params == '$mArg' || $.parseJSON(params)['attachments'].length <= 0) {
@@ -145,7 +145,7 @@ function checkBrowser() {
 }
 
 function http2https(url) {
-    _url = url.replace(/^http:/,'https:')
+    _url = url.replace(/^http:/, 'https:')
     return _url
 }
 
@@ -192,7 +192,7 @@ function showBox() {
             $('#ne-21box').css('display', show == 'block' ? 'none' : 'block');
         })
     } else {
-        $('#ne-21log',window.parent.document).html('')
+        $('#ne-21log', window.parent.document).html('')
     }
     let _u = getCk('_uid') || getCk('UID')
     GM_xmlhttpRequest({
@@ -215,7 +215,7 @@ function showBox() {
 
 function logger(str, color) {
     var _time = new Date().toLocaleTimeString()
-    $('#ne-21log',window.parent.document).prepend('<hr><p style="color: ' + color + ';">[' + _time + ']' + str + '</p>')
+    $('#ne-21log', window.parent.document).prepend('<hr><p style="color: ' + color + ';">[' + _time + ']' + str + '</p>')
 }
 
 function getStr(str, start, end) {
@@ -276,7 +276,7 @@ function toNext() {
             }
         })
 
-        let _curChaterId = $('#coursetree',window.parent.document).find('.posCatalog_active').attr('id')
+        let _curChaterId = $('#coursetree', window.parent.document).find('.posCatalog_active').attr('id')
         let _curIndex = _t.findIndex((item) => item['curid'] == _curChaterId)
         for (_curIndex; _curIndex < _t.length - 1; _curIndex++) {
             if (_t[_curIndex]['status'].indexOf('待完成') != -1) {
@@ -413,20 +413,21 @@ function missonAudio(dom, obj) {
                         clipTime = '0_' + duration,
                         playingTime = 0,
                         isdrag = 3;
+                    
                     var _rt = 0.9;
                     if (setting.rate == 0) {
-                        logger('已开启音频秒过，99.9%会导致进度重置、挂科等问题。', 'red')
+                        logger('已开启音频秒过，', 'red')
                         logger('已开启音频秒过，请等待5秒！！！', 'red')
                     } else if (setting.rate > 1 && setting.rate <= 16) {
-                        logger('已开启音频倍速，当前倍速：' + setting.rate + ',99.9%会导致进度重置、挂科等问题。', 'red')
+                        logger('已开启音频倍速，当前倍速：' + setting.rate + '', 'red')
                         logger('已开启音频倍速，进度40秒更新一次，请等待！', 'red')
-                    } else if (setting.rate > 16) {
-                        setting.rate = 1
-                        logger('超过允许设置的最大倍数，已重置为1倍速。', 'red')
                     } else {
                         logger("音频进度每隔40秒更新一次，请等待耐心等待...", 'blue')
                     }
                     logger("音频：" + name + "开始播放")
+                    var s=setInterval(function(){
+                        _l.reload();
+                    },300000)
                     updateAudio(reportUrl, dtoken, classId, playingTime, duration, clipTime, objectId, otherInfo, jobId, userId, isdrag, _rt).then((status) => {
                         switch (status) {
                             case 1:
@@ -441,12 +442,12 @@ function missonAudio(dom, obj) {
                         }
                     })
                     let _loop = setInterval(() => {
-                        playingTime += 40 * setting.rate
+                        playingTime += 60 * setting.rate
                         if (playingTime >= duration || setting.rate == 0) {
                             clearInterval(_loop)
                             playingTime = duration
                             isdrag = 4
-                        } else if (rt = 1 && playingTime == 40 * setting.rate) {
+                        } else if (rt = 1 && playingTime == setting.rate) {
                             isdrag = 3
                         } else {
                             isdrag = 0
@@ -462,6 +463,7 @@ function missonAudio(dom, obj) {
                                 case 2:
                                     clearInterval(_loop)
                                     logger("音频：" + name + "检测播放完毕，准备处理下一个任务。", 'green')
+                                    clearInterval(s)
                                     switchMission()
                                     break
                                 case 3:
@@ -472,7 +474,7 @@ function missonAudio(dom, obj) {
                                     console.log(status)
                             }
                         })
-                    }, setting.rate == 0 ? 1000 : 40000)
+                    }, setting.rate == 0 ? 1000 : 60000)
                 } catch (e) {
                     logger('发生错误：' + e, 'red')
                 }
@@ -537,18 +539,15 @@ function missonVideo(dom, obj) {
                         isdrag = 3;
                     var _rt = 0.9;
                     if (setting.rate == 0) {
-                        logger('已开启视频秒过，99.9%会导致进度重置、挂科等问题。', 'red')
+                        logger('已开启视频秒过，', 'red')
                         logger('已开启视频秒过，请等待5秒！！！', 'red')
                     } else if (setting.rate > 1 && setting.rate <= 16) {
-                        logger('已开启视频倍速，当前倍速：' + setting.rate + ',99.9%会导致进度重置、挂科等问题。', 'red')
+                        logger('已开启视频倍速，当前倍速：' + setting.rate + ',', 'red')
                         logger('已开启视频倍速，进度40秒更新一次，请等待！', 'red')
-                    } else if (setting.rate > 16) {
-                        setting.rate = 1
-                        logger('超过允许设置的最大倍数，已重置为1倍速。', 'red')
-                    } else {
+                    }  else {
                         logger("视频进度每隔40秒更新一次，请等待耐心等待...", 'blue')
                     }
-                    logger("视频：" + name + "开始播放")
+                    logger("视频：" + name + "开始播放[" + duration + ']')
                     updateVideo(reportUrl, dtoken, classId, playingTime, duration, clipTime, objectId, otherInfo, jobId, userId, isdrag, _rt).then((status) => {
                         switch (status) {
                             case 1:
@@ -563,12 +562,13 @@ function missonVideo(dom, obj) {
                         }
                     })
                     let _loop = setInterval(() => {
-                        playingTime += 40 * setting.rate
+                        playingTime += 60 * setting.rate
+
                         if (playingTime >= duration || setting.rate == 0) {
                             clearInterval(_loop)
                             playingTime = duration
                             isdrag = 4
-                        } else if (rt = 1 && playingTime == 40 * setting.rate) {
+                        } else if (rt = 1 && playingTime == setting.rate) {
                             isdrag = 3
                         } else {
                             isdrag = 0
@@ -942,12 +942,12 @@ function startDoPhoneCyWork(index, doms, phoneWeb) {
         let workStatus = $(workIframe).contents().find('.CeYan .ZyTop h3 span:nth-child(1)').text().trim()
         if (!workStatus) {
             _domList.splice(0, 1)
-            setTimeout(missonStart, 2000)
+            setTimeout(missonStart, 1000)
             return
         }
         if (setting.share && workStatus.indexOf("已完成") != -1) {
             logger('测验：' + (index + 1) + ',检测到此测验已完成,准备收录答案。', 'green')
-            setTimeout(() => { upLoadWork(index, doms, workIframe) }, 2000)
+            setTimeout(() => { upLoadWork(index, doms, workIframe) }, 1000)
         } else if (workStatus.indexOf("待做") != -1) {
             logger('测验：' + (index + 1) + ',准备处理此测验...', 'purple')
             $(workIframe).attr('src', phoneWeb)
@@ -983,12 +983,12 @@ function startDoCyWork(index, doms) {
         let workStatus = $(workIframe).contents().find('.CeYan .ZyTop h3 span:nth-child(1)').text().trim()
         if (!workStatus) {
             _domList.splice(0, 1)
-            setTimeout(missonStart, 2000)
+            setTimeout(missonStart, 1000)
             return
         }
         if (setting.share && workStatus.indexOf("已完成") != -1) {
             logger('测验：' + (index + 1) + ',检测到此测验已完成,准备收录答案。', 'green')
-            setTimeout(() => { upLoadWork(index, doms, workIframe) }, 2000)
+            setTimeout(() => { upLoadWork(index, doms, workIframe) }, 1000)
         } else if (workStatus.indexOf("待做") != -1) {
             logger('测验：' + (index + 1) + ',准备处理此测验...', 'purple')
             setTimeout(() => { doWork(index, doms, workIframe) }, 1000)
@@ -1315,7 +1315,7 @@ function toNextExam() {
         let $nextbtn = $_examtable.find('.nextDiv a.jb_btn')
         setTimeout(() => {
             $nextbtn.click()
-        }, setting.examTurnTime ? 2000 + (Math.floor(Math.random() * 5 + 1) * 1000) : 2000)
+        }, setting.examTurnTime ? 1000 + (Math.floor(Math.random() * 5 + 1) * 1000) : 1000)
     } else {
         logger('用户设置不自动跳转下一题，请手动点击', 'blue')
     }
@@ -2062,3 +2062,4 @@ function base64ToUint8Array(base64) {
     }
     return buffer;
 }
+
