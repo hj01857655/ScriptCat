@@ -1073,7 +1073,7 @@ function uParse(selector,opt,params){
                 if(p.onReadComplete){
 
                     if(typeof console == 'object')
-                        console.log('call uParse to onReadComplete');
+                        console.log('call uParse to onReadComplete');//
 
                     p.onReadComplete();
                     break;
