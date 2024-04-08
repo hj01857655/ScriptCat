@@ -1,0 +1,178 @@
+// ==UserScript==
+// @name                破解超星章节测验、作业、考试复制粘贴
+// @description         破解简答题无法粘贴；破解F12无限Debugger；增加超星双击题目自动隐式复制题目内容。更新于【2022年5月11号下午】
+// @namespace           http://tampermonkey.net/
+// @author              hj01857655
+// @version             2.0
+// @require             https://cdn.jsdelivr.net/npm/sweetalert2@11
+// @match               *://*.chaoxing.com/*
+// @include             *mooc1.chaoxing.com/exam-ans/exam/*
+// @connect             chaoxing.com
+// @grant               unsafeWindow
+// @grant               GM_xmlhttpRequest
+// @grant               GM_getValue
+// @grant               GM_setValue
+// @grant               GM_setClipboard
+// @license             MIT
+// ==/UserScript==
+/* globals  $ */
+let _self = unsafeWindow,
+    url = location.pathname,
+    top = _self;
+function enableConsoleLog() {
+    var iframe = document.createElement('iframe')
+    iframe.style.display = 'none'
+    document.body.appendChild(iframe)
+    window.console = iframe.contentWindow.console
+}
+
+console.log(location.pathname)
+if ($(".oralTestQue").length) {
+    alert($(".oralTestQue").length)
+}
+
+
+
+// 100 毫秒检查一次
+
+window.onerror = () => { return true }
+
+var scripts = $(document.getElementsByTagName('script'))
+for (let i = 0, l = scripts.length; i < l; i++) {
+    setInterval(function () {
+        if (scripts[i].src == 'https://detect.chaoxing.com/api/passport2-onlineinfo.js?key=true&refer=http://i.mooc.chaoxing.com' || scripts[i].src.indexOf('detect.chaoxing.com') != -1) {
+
+            scripts[i].remove();
+        }
+    })
+
+}
+unsafeWindow.appendChild = unsafeWindow.Element.prototype.appendChild;
+unsafeWindow.Element.prototype.appendChild = function () {
+    try {
+        if (arguments[0].src) {
+            if (arguments[0].nodeName == 'SCRIPT') {
+                console.log(arguments[0].src)
+                if (arguments[0].src.includes('detect.chaoxing.com')) {
+                    arguments[0].src = ''
+                    return;
+                }
+            }
+
+        }
+        unsafeWindow.appendChild.apply(this, arguments);
+    } catch (e) { 1 }
+
+};
+    $(document).keydown(function (event) {
+        console.log(event.keyCode, event.target.tagName);
+        if (event.keyCode === 116) {
+            return false; //阻止F5刷新键
+        }
+        if (event.keyCode === 67 && (event.ctrlKey || event.metaKey)) {
+            // 阻止 Ctrl/Cmd+C 复制
+            return false;
+        } else if (event.keyCode === 86 && (event.ctrlKey || event.metaKey)) {
+            // 阻止 Ctrl/Cmd+V 粘贴
+            return false;
+        }
+
+    });
+
+
+    //考试、作业
+    if (['/mooc-ans/mooc2/work/dowork'].includes(location.pathname)) {
+        //1. 更改超星不可粘贴为可粘贴
+        $.toast({ type: 'success', content: '已解除复制、粘贴限制！', time: 1000 });
+
+
+        setInterval(function () {
+            relieve();
+        })
+
+        console.log($(".mark_name"))
+
+        //2. 添加点击题目隐式自动复制题目到粘贴板
+        let problems = $(".mark_name")
+
+        for (let i = 0; i < problems.length; i++) {
+            $node = $(problems[i])
+            // console.log(problems[i].innerHTML)
+            var tt = problems[i].innerHTML.replace(/<\/div>/g, '').replace(/<div style="overflow:hidden;">/g, '')
+            problems[i].innerHTML = tt;
+            // console.log(problems[i].innerHTML)
+            $('.colorShallow').remove()
+            $node.click(function () {
+                var str = $(this).text().replace($(this).children("span").text(), "")
+                var selection = window.getSelection();
+                var range = document.createRange();
+                range.selectNodeContents(this);
+                selection.removeAllRanges();
+                selection.addRange(range);
+                str = str.substr(str.indexOf(".") + 2)
+                GM_setClipboard(str)
+                $.toast({ type: 'success',content: str })
+            })
+        }
+    } else if (['/work/doHomeWorkNew'].includes(url)) {//章节测试
+        // GM_setClipboard(location.href)
+        enableConsoleLog()
+        console.log(location.href)
+        window.alert = console.log();
+        // window.location.reload()={}
+        unsafeWindow.aalert = unsafeWindow.alert;
+
+        unsafeWindow.alert = (msg) => {
+            if (msg == '保存成功') {
+                return;
+            }
+            unsafeWindow.aalert(msg);
+        }
+        setInterval(function () { relieve(); }, 1000)
+        setInterval(function () {
+            $('.Btn_blue_1')[0].click()
+            if ($('#confirmSubWin:visible').length) {
+                _self.form1submit();
+            }
+        }, 10000)
+        let problems = $('.TiMu')
+        for (let i = 0; i < problems.length; i++) {
+            var $node = $(problems[i]).children('div.Zy_TItle.clearfix').children('div.clearfix')
+            $node.attr("style", "cursor:hand")
+            $node.click(function () {
+                try {
+                    var str = $(this).text().replace(/^【.*?】\s*/, '').replace(/。$/, '').replace('？', '').replace(/\s*（\d+\.\d+分）$/, '').replaceAll('javascript:void(0);', '').replaceAll("&nbsp;", '').replaceAll("，", ',').replaceAll(
+                        "。", '.').replaceAll("：", ':').replaceAll("；",
+                            ';').replaceAll("？", '?').replaceAll("（", '(').replaceAll("）", ')').replaceAll("“", '"')
+                        .replaceAll("”", '"').replaceAll("！", '!').replaceAll("-", ' ').replace(/(<([^>]+)>)/ig, '')
+                        .replace(/^\s+/ig, '').replace(/\s+$/ig, '')
+
+                    GM_setClipboard(str)
+
+                } catch (e) {
+                    console.error(e)
+                }
+            })
+        }
+
+
+    } else if (['/work/selectWorkQuestionYiPiYue'].includes(url)) {
+        console.log(location.href)
+    }
+    function relieve() {
+
+        UE.EventBase.prototype.fireEvent = function () {
+            return null
+        };
+        // $("body").removeAttr("onselectstart");
+        // $("html").css("user-select", "unset");
+
+        for (let ins in _self.UE.instants) {
+            // console.log(ins)
+            UE.instants[ins].removeListener('beforepaste', editorPaste);//过时了
+            // _self.UE.instants[ins].removeListener('beforepaste', unsafeWindow.myEditor_paste);
+            // _self.UE.instants[ins].removeListener('beforepaste', unsafeWindow.editorPaste);
+
+        }
+    }
+
