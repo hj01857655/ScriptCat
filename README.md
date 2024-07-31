@@ -10,7 +10,7 @@
 ## API列表
 ### authUser
 登录帐号\
-<code>http://oa.csmu.edu.cn:8099/app.do?method=authUser&xh=20220182&pwd=jff119990906</code>
+<code>http://oa.csmu.edu.cn:8099/app.do?method=authUser&xh=12023050204013&pwd=123456</code>
 
 **返回值**
 > flag：未知\
@@ -22,7 +22,7 @@ msg：登录状态
 
 ### getStudentIdInfo 暂500错误
 获取学号信息\
-<code>http://oa.csmu.edu.cn:8099/app.do?method=getStudentIdInfo&xh=20220182</code>
+<code>http://oa.csmu.edu.cn:8099/app.do?method=getStudentIdInfo&xh=12023050204013</code>
 
 **返回值**
 > bjid：未知\
@@ -42,7 +42,7 @@ xnxqh：学年
 
 ### getKbcxAzc 暂500错误
 获取课程表\
-<code>http://oa.csmu.edu.cn:8099/app.do?method=getKbcxAzc&xh=20220182&xnxqid=#学年#&zc=#未知，与getCurrentTime返回的zc相同#</code>
+<code>http://oa.csmu.edu.cn:8099/app.do?method=getKbcxAzc&xh=12023050204013&xnxqid=#学年#&zc=#未知，与getCurrentTime返回的zc相同#</code>
 
 **返回值**\
 返回JSON数组
