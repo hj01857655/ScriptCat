@@ -17,10 +17,7 @@
 
 登录帐号
 
-```
-http://oa.csmu.edu.cn:8099/app.do?method=authUser&xh=12023050204013&pwd=123456
-```
-
+`http://oa.csmu.edu.cn:8099/app.do?method=authUser&xh=12023050204013&pwd=123456`
 
 **返回值**
 
@@ -30,6 +27,7 @@ http://oa.csmu.edu.cn:8099/app.do?method=authUser&xh=12023050204013&pwd=123456
 > userdwmc：学院名称
 > usertype：用户类别
 > msg：登录状态
+>
 
 ### getStudentIdInfo
 
