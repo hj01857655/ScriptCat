@@ -9,6 +9,8 @@
 
 由于条件限制，部分参数作用仍未明晰，欢迎fork帮助我们改进。
 
+
+
 ## API列表
 
 ### authUser
@@ -16,7 +18,6 @@
 登录帐号
 
 `<code>`http://oa.csmu.edu.cn:8099/app.do?method=authUser&xh=12023050204013&pwd=123456 `</code>`
-
 
 **返回值**
 
@@ -54,7 +55,7 @@
 ### getKbcxAzc 暂500错误
 
 获取课程表
-`<code>`http://oa.csmu.edu.cn:8099/app.do?method=getKbcxAzc&xh=12023050204013&xnxqid=#学年#&zc=#未知，与getCurrentTime返回的zc相同#`</code>`
+`<code>`http://oa.csmu.edu.cn:8099/app.do?method=getKbcxAzc&xh=12023050204013&xnxqid=#学年#&zc=#周次#`</code>`
 
 **返回值**返回JSON数组
 
