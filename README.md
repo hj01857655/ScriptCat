@@ -17,7 +17,8 @@
 
 登录帐号
 
-`http://oa.csmu.edu.cn:8099/app.do?method=authUser&xh=12023050204013&pwd=123456`
+`<code>`http://oa.csmu.edu.cn:8099/app.do?method=authUser&xh=12023050204013&pwd=123456 `</code>`
+
 
 **返回值**
 
@@ -27,12 +28,11 @@
 > userdwmc：学院名称
 > usertype：用户类别
 > msg：登录状态
->
 
-### getStudentIdInfo
+### getStudentIdInfo 暂500错误
 
 获取学号信息
-`<code>`http://oa.csmu.edu.cn:8099/app.do?method=getStudentIdInfo&xh=12023050204013`</code>`
+`<code>`http://oa.csmu.edu.cn:8099/app.do?method=getStudentIdInfo&xh=12023050204013 `</code>`
 
 **返回值**
 
@@ -41,7 +41,7 @@
 > yxid：未知
 > xxdm：未知
 
-### getCurrentTime
+### getCurrentTime 暂500错误
 
 获取当前时间、周次、学年等信息
 `<code>`http://oa.csmu.edu.cn:8099/app.do?method=getCurrentTime&currDate=#查询日期#`</code>`
@@ -69,7 +69,7 @@
 > kssj：上课时间
 > sjbz：未知
 
-### getKxJscx
+### getKxJscx 暂500错误
 
 获取空教室
 `<code>`http://oa.csmu.edu.cn:8099/app.do?method=getKxJscx&time=#查询日期#&idleTime=#见下方说明#`</code>`
@@ -92,17 +92,17 @@
 > yxzws：教室容量
 > zws：未知，和yxzws相同
 
-### getXqcx
+### getXqcx 暂500错误
 
 获取校区
-`<code>`http://oa.csmu.edu.cn:8099/app.do?method=getXqcx`</code>`
+`<code>`http://oa.csmu.edu.cn:8099/app.do?method=getXqcx `</code>`
 
 **返回值**返回JSON数组
 
 > xqid：校区ID
 > xqmc：校区名称
 
-### getJxlcx
+### getJxlcx 暂500错误
 
 获取校区教学楼信息
 `<code>`http://oa.csmu.edu.cn:8099/app.do?method=getJxlcx&xqid=#校区ID#`</code>`
@@ -112,7 +112,7 @@
 > jzwid：教学楼教学楼ID
 > jzwmc：教学楼名称
 
-### getKxJscx
+### getKxJscx 暂500错误
 
 精确查询空教室\
 
@@ -142,7 +142,7 @@ xqid、jxlid、classroomNumber是可选参数
 ### getUserInfo   暂500错误
 
 获取帐号信息
-`<code>`http://oa.csmu.edu.cn:8099/app.do?method=getUserInfo&xh=20220182`</code>`
+`<code>`http://oa.csmu.edu.cn:8099/app.do?method=getUserInfo&xh=20220182 `</code>`
 
 **返回值**
 
@@ -163,10 +163,10 @@ xqid、jxlid、classroomNumber是可选参数
 > yxmc：院系名称
 > zymc：专业名称
 
-### getXnxq
+### getXnxq 暂500错误
 
 获取学年和学期信息
-`<code>`http://oa.csmu.edu.cn:8099/app.do?method=getXnxq&xh=20220182`</code>`
+`<code>`http://oa.csmu.edu.cn:8099/app.do?method=getXnxq&xh=20220182 `</code>`
 
 **返回值**返回JSON数组
 
@@ -174,7 +174,7 @@ xqid、jxlid、classroomNumber是可选参数
 > xnxq01id=学期学年ID
 > xqmc：学期名称
 
-### getCjcx
+### getCjcx 暂500错误
 
 获取成绩信息
 `<code>`http://oa.csmu.edu.cn:8099/app.do?method=getCjcx&xh=20220182&xnxqid=#学期学年ID#`</code>`
@@ -182,18 +182,18 @@ xqid、jxlid、classroomNumber是可选参数
 **返回值**
 条件所限，尚未明晰
 
-### getKscx
+### getKscx 暂500错误
 
 获取考试信息
-`<code>`http://oa.csmu.edu.cn:8099/app.do?method=getKscx&xh=20220182`</code>`
+`<code>`http://oa.csmu.edu.cn:8099/app.do?method=getKscx&xh=20220182 `</code>`
 
 **返回值**
 条件所限，尚未明晰
 
-### getEarlyWarnInfo
+### getEarlyWarnInfo 暂500错误
 
 获取学籍预警信息
-`<code>`http://oa.csmu.edu.cn:8099/app.do?method=getEarlyWarnInfo&xh=20220182&history=#见下方说明#`</code>`
+`<code>`http://oa.csmu.edu.cn:8099/app.do?method=getEarlyWarnInfo&xh=20220182&history=#见下方说明 #`</code>`
 
 **history取值**
 
