@@ -16,7 +16,12 @@
 ### authUser
 
 登录帐号
-`<code>`http://oa.csmu.edu.cn:8099/app.do?method=authUser&xh=12023050204013&pwd=123456`</code>`
+
+```
+http://oa.csmu.edu.cn:8099/app.do?method=authUser&xh=12023050204013&pwd=123456
+```
+
+`<code>` `</code>`
 
 **返回值**
 
