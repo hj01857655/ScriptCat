@@ -10,7 +10,7 @@
 ## API列表
 ### authUser
 登录帐号\
-<code>http://oa.csmu.edu.cn:8099/app.do?method=authUser&xh=20220182&pwd=#密码#</code>
+<code>http://oa.csmu.edu.cn:8099/app.do?method=authUser&xh=20220182&pwd=jff119990906</code>
 
 **返回值**
 > flag：未知\
