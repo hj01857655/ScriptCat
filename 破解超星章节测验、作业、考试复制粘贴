@@ -1,13 +1,18 @@
 // ==UserScript==
-// @name                破解超星章节测验、作业、考试复制粘贴
+// @name                破解超星章节测验、作业复制粘贴
 // @description         破解简答题无法粘贴；破解F12无限Debugger；增加超星双击题目自动隐式复制题目内容。更新于【2022年5月11号下午】
 // @namespace           http://tampermonkey.net/
 // @author              hj01857655
 // @version             2.0
+// @connect             *
 // @require             https://cdn.jsdelivr.net/npm/sweetalert2@11
-// @match               *://*.chaoxing.com/*
-// @include             *mooc1.chaoxing.com/exam-ans/exam/*
-// @connect             chaoxing.com
+// @match               https://mooc1.chaoxing.com/ananas/modules/work/index.html*
+// @match               https://mooc1-api.chaoxing.com/mooc-ans/mooc2/work/dowork*
+// @match               https://mooc1-api.chaoxing.com/mooc-ans/mooc2/work/view*
+
+// @match               https://mooc1.chaoxing.com/mooc-ans/work/doHomeWorkNew*
+// @match               https://mooc1.chaoxing.com/mooc-ans/work/selectWorkQuestionYiPiYue*
+
 // @grant               unsafeWindow
 // @grant               GM_xmlhttpRequest
 // @grant               GM_getValue
@@ -16,187 +21,250 @@
 // @license             MIT
 // ==/UserScript==
 /* globals  $ */
-let _self = unsafeWindow,
-    url = location.pathname,
-    top = _self;
-//打印当前路径
-console.log(location.pathname)
-/*
-    创建了一个隐藏的 <iframe> 元素，并将其添加到文档的 <body> 中。
-    它将 window.console 对象指向这个 <iframe> 的 contentWindow.console，
-    所有的日志输出都会被重定向到这个 <iframe> 中
-*/
-function enableConsoleLog() {
-    function createIframe() {
-        var iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        document.head.appendChild(iframe);
-        return iframe.contentWindow.console;
+(function () {
+    let _self = unsafeWindow
+    console.log(location.href)
+    unsafeWindow.appendChild = unsafeWindow.Element.prototype.appendChild;
+    unsafeWindow.Element.prototype.appendChild = function () {
+        try {
+            if (arguments[0].src.indexOf('detect.chaoxing.com') > 0) {
+                return;
+            }
+        } catch (e) { }
+        unsafeWindow.appendChild.apply(this, arguments);
+    };
+    Object.defineProperty(document, 'oncopy', {
+        value: null,
+        writable: true
+    });
+    function relieve() {
+
+        for (let ins in UE.instants) {
+            UE.instants[ins].removeListener('beforepaste', myEditor_paste);
+        }
+    }
+    function enableConsoleLog() {
+        function createIframe() {
+            var iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            document.head.appendChild(iframe);
+            console.log(iframe.contentWindow.console)
+            return iframe.contentWindow.console;
+        }
+
+        window.console = createIframe();
+    }
+    var scripts = $(document.getElementsByTagName('script'))
+    for (let i = 0, l = scripts.length; i < l; i++) {
+        if (scripts[i].src == 'https://detect.chaoxing.com/api/passport2-onlineinfo.js?key=true&refer=http://i.mooc.chaoxing.com' || scripts[i].src.indexOf('detect.chaoxing.com') != -1) {
+            scripts[i].src = '';
+            scripts[i].remove();
+        }
     }
 
-    window.console = createIframe();
-}
+
+    //作业,章节测试
+    if (['/mooc-ans/mooc2/work/dowork'].includes(location.pathname)) {
+        //1. 更改超星不可粘贴为可粘贴
+        console.log(location.pathname)
+        setInterval(relieve(), 1000)
+        $.toast({ type: 'success', content: '已解除复制、粘贴限制！', time: 1000 });
+
+        let questions = $(".padBom50.questionLi.fontLabel.singleQuesId");
+        for (let i = 0; i < questions.length; i++) {
+            let $questionBlock = $(questions[i]);
+
+            // Create a new button element for copying the question text
+            let $copyQuestionButton = $('<button type="button">').text('复制题目').css({
+                marginLeft: '10px',
+                padding: '5px 10px',
+                backgroundColor: '#007bf0',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer'
+            });
+
+            // Create a new button element for copying the formatted question text including options
+            let $copyFullTextButton = $('<button type="button">').text('复制题目+选项').css({
+                marginLeft: '10px',
+                padding: '5px 10px',
+                backgroundColor: '#28a745',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer'
+            });
+
+            // Append the buttons after the h3 element within the question block
+            $questionBlock.find('h3.mark_name.colorDeep.fontLabel').after($copyQuestionButton, $copyFullTextButton);
+
+            // Add click event handler to the "复制题目" button
+            $copyQuestionButton.click(function () {
+                // Extract the question text
+                let questionText = $questionBlock.find('h3.mark_name.colorDeep.fontLabel').text().replace($questionBlock.find('h3.mark_name.colorDeep.fontLabel span').text(), "").trim();
+                questionText = questionText.substring(questionText.indexOf(".") + 2).trim();
+
+                // Copy to clipboard
+                GM_setClipboard(questionText);
+                saveWork()
+                // Show success toast
+                $.toast({
+                    type: 'success',
+                    content: questionText.substring(0, 50) + '...', // Show first 50 characters of the copied text
+                    delay: 1000
+                });
+            });
+
+            // Add click event handler to the "复制题目+选项" button
+            $copyFullTextButton.click(function () {
+                // Extract the question text
+                let questionText = $questionBlock.find('h3.mark_name.colorDeep.fontLabel').text().replace($questionBlock.find('h3.mark_name.colorDeep.fontLabel span').text(), "").trim();
+                questionText = questionText.substring(questionText.indexOf(".") + 2).trim();
+
+                // Extract the options
+                let options = [];
+                $questionBlock.find('.stem_answer .answerBg').each(function () {
+                    let optionLetter = $(this).find('.num_option.fl, .num_option_dx.fl').text().trim();
+                    let optionText = $(this).find('.answer_p p').text().trim();
+                    options.push(optionLetter + '、' + optionText); // Add a comma between the letter and the text
+                });
+
+                // Combine question and options into a single string
+                let str = questionText + "\n" + options.join("\n");
+
+                // Copy to clipboard
+                GM_setClipboard(str);
+                saveWork()
+                // Show success toast
+                $.toast({
+                    type: 'success',
+                    content: questionText.substring(0, 50) + '...', // Show first 50 characters of the copied text
+                    delay: 1000
+                });
+            });
+        }
+    } else if (['/mooc-ans/work/doHomeWorkNew'].includes(location.pathname)) {//章节测试
 
 
+        // setInterval(function () {
+        //     relieve();
+        //     unsafeWindow.aalert = unsafeWindow.alert;
+        //     unsafeWindow.alert = (msg) => {
+        //         if (msg == '保存成功') {
+        //             return;
+        //         }
+        //         aalert(msg);
+        //     }
+        // }, 10000)
+        enableConsoleLog();
+        // Function to extract and format question text
+        function getQuestionText($questionBlock) {
+            let questionText = $questionBlock.find('.Zy_TItle .newZy_TItle').parent().html().trim();
+            // Remove <p><br></p> tags
+            questionText = questionText.replace(/<p><br><\/p>/g, '');
+            // Convert HTML to plain text
+            questionText = $(`<div>${questionText}</div>`).text().trim();
+            questionText = questionText.replace(/【(单选|多选|填空)题】/, '').trim(); // Remove "【单选题】", "【多选题】", or "【填空题】"
+            questionText = questionText.replace(/(\s*\(\s*&nbsp;\s*&nbsp;\s*&nbsp;\s*\))/g, '').trim(); // Remove unnecessary spaces and parentheses
+            return questionText;
+        }
 
-if ($(".oralTestQue").length) {
-    alert($(".oralTestQue").length)
-}
+        // Function to extract and format options
+        function getOptions($questionBlock) {
+            let options = [];
+            $questionBlock.find('.Zy_ulTop li.before-after, .Zy_ulTop li.before-after-checkbox').each(function () {
+                let optionLetter = $(this).find('.num_option, .num_option_dx').text().trim();
+                let optionText = $(this).find('a p').text().trim();
+                options.push(optionLetter + '、' + optionText);
+            });
+            return options;
+        }
 
+        let questions = $(".singleQuesId");
+        for (let i = 0; i < questions.length; i++) {
+            let $questionBlock = $(questions[i]);
 
+            // Check if it's a single choice, multiple choice, or fill-in-the-blank question
+            if ($questionBlock.find('.Zy_TItle .newZy_TItle').length > 0 &&
+                ($questionBlock.find('.Zy_TItle .newZy_TItle').text().includes('【单选题】') ||
+                    $questionBlock.find('.Zy_TItle .newZy_TItle').text().includes('【多选题】') ||
+                    $questionBlock.find('.Zy_TItle .newZy_TItle').text().includes('【填空题】'))) {
 
-// 100 毫秒检查一次
+                // Ensure buttons are not already added
+                if ($questionBlock.find('.copy-buttons').length === 0) {
+                    // Create a new button element for copying the question text
+                    let $copyQuestionButton = $('<button type="button">').text('复制题目').css({
+                        marginLeft: '10px',
+                        padding: '5px 10px',
+                        backgroundColor: '#007bf0',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer'
+                    });
 
-window.onerror = () => { return true }
+                    // Create a new button element for copying the formatted question text including options
+                    let $copyFullTextButton = $('<button type="button">').text('复制题目+选项').css({
+                        marginLeft: '10px',
+                        padding: '5px 10px',
+                        backgroundColor: '#28a745',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer'
+                    });
 
-// var scripts = $(document.getElementsByTagName('script'))
-// for (let i = 0, l = scripts.length; i < l; i++) {
-//     setInterval(function () {
-//         if (scripts[i].src == 'https://detect.chaoxing.com/api/passport2-onlineinfo.js?key=true&refer=http://i.mooc.chaoxing.com' || scripts[i].src.indexOf('detect.chaoxing.com') != -1) {
-//             scripts[i].remove();
-//         }
-//     })
+                    // Wrap buttons in a div to avoid adding them multiple times
+                    let $buttonsDiv = $('<div class="copy-buttons"></div>').append($copyQuestionButton, $copyFullTextButton);
 
-// }
-$(document).ready(function () {
-    $('script[src*="detect.chaoxing.com/api/monitor"]').remove();
-});
-unsafeWindow.appendChild = unsafeWindow.Element.prototype.appendChild;
-unsafeWindow.Element.prototype.appendChild = function () {
-    try {
-        if (arguments[0].src) {
-            if (arguments[0].nodeName == 'SCRIPT') {
-                console.log(arguments[0].src)
-                if (arguments[0].src.includes('detect.chaoxing.com')) {
-                    arguments[0].src = ''
-                    console.log(arguments[0].src)
-                    return;
+                    // Append the buttons after the appropriate element within the question block
+                    $questionBlock.find('.Zy_TItle .newZy_TItle').parent().after($buttonsDiv);
+
+                    // Add click event handler to the "复制题目" button
+                    $copyQuestionButton.click(function () {
+                        // Extract the question text
+                        let questionText = getQuestionText($questionBlock);
+
+                        // Copy to clipboard
+                        GM_setClipboard(questionText);
+
+                        // Show success toast
+                        $.toast({
+                            content: questionText.substring(0, 50) + '...', // Show first 50 characters of the copied text
+                            delay: 1000
+                        });
+                    });
+
+                    // Add click event handler to the "复制题目+选项" button
+                    $copyFullTextButton.click(function () {
+                        // Extract the question text
+                        let questionText = getQuestionText($questionBlock);
+
+                        let str = questionText;
+
+                        // Determine if it's a multiple choice or single choice question
+                        if ($questionBlock.find('.Zy_TItle .newZy_TItle').text().includes('【单选题】') ||
+                            $questionBlock.find('.Zy_TItle .newZy_TItle').text().includes('【多选题】')) {
+                            // Extract the options
+                            let options = getOptions($questionBlock);
+                            // Combine question and options into a single string
+                            str += "\n" + options.join("\n");
+                        }
+
+                        // Copy to clipboard
+                        GM_setClipboard(str);
+
+                        // Show success toast
+                        $.toast({
+                            content: questionText.substring(0, 50) + '...', // Show first 50 characters of the copied text
+                            delay: 1000
+                        });
+                    });
                 }
             }
-
         }
-        unsafeWindow.appendChild.apply(this, arguments);
-    } catch (e) { 1 }
 
-};
 
-$(document).keydown(function (event) {
-    console.log(event.keyCode, event.target.tagName);
-    if (event.keyCode === 116) {
-        return false; //阻止F5刷新键
     }
-});
-
-/*
-    '/mooc-ans/work/doHomeWorkNew'章节测试
-    '/mooc-ans/mooc2/work/dowork'作业
-*/
-/*
-    作业部分
-*/
-if (['/mooc-ans/mooc2/work/dowork'].includes(location.pathname)) {
-    //1. 更改超星不可粘贴为可粘贴
-    setInterval(function () {
-        relieve();
-    })
-    $.toast({ type: 'success', content: '已解除复制、粘贴限制！', time: 1000 });
-
-    console.log($(".mark_name"))
-    //2. 添加点击题目隐式自动复制题目到粘贴板
-    let problems = $(".mark_name")
-
-    for (let i = 0; i < problems.length; i++) {
-        $node = $(problems[i])
-        // console.log(problems[i].innerHTML)
-        var tt = problems[i].innerHTML.replace(/<\/div>/g, '').replace(/<div style="overflow:hidden;">/g, '')
-        problems[i].innerHTML = tt;
-        // console.log(problems[i].innerHTML)
-        $('.colorShallow').remove()
-        $node.click(function () {
-            var str = $(this).text().replace($(this).children("span").text(), "")
-            var selection = window.getSelection();
-            var range = document.createRange();
-            range.selectNodeContents(this);
-            selection.removeAllRanges();
-            selection.addRange(range);
-            str = str.substr(str.indexOf(".") + 2)
-            GM_setClipboard(str)
-            $.toast({ type: 'success', content: str })
-        })
-    }
-    /*
-        章节测试部分
-    */
-} else if (['/mooc-ans/work/doHomeWorkNew'].includes(url)) {//章节测试
-    setInterval(function () {
-        relieve();
-        enableConsoleLog()
-    })
-    $.toast({ type: 'success', content: '已解除复制、粘贴限制！', time: 1000 });
-    
-    
-
-    // 保存原始的 window.alert 函数
-    window.originalAlert = window.alert;
-    // 将 window.alert 重定向到 console.log
-    window.alert = console.log;
-    // 保存原始的 unsafeWindow.alert 函数
-    unsafeWindow.originalAlert = unsafeWindow.alert;
-    // 重定义 unsafeWindow.alert 函数
-    unsafeWindow.alert = function (msg) {
-        // 如果 msg 为 '保存成功'，则不弹出警告框
-        if (msg === '保存成功') {
-            return;
-        }
-        // 否则调用原始的 unsafeWindow.alert 函数
-        unsafeWindow.originalAlert(msg);
-    };
-
-    // setInterval(function () {
-    //     $('.Btn_blue_1')[0].click()
-    //     if ($('#confirmSubWin:visible').length) {
-    //         _self.noSubmit();
-    //     }
-    // }, 10000)
-    let problems = $('.TiMu')
-    console.log(problems)
-    for (let i = 0; i < problems.length; i++) {
-        var $node = $(problems[i]).children('div.Zy_TItle.clearfix').children('div.clearfix')
-        $node.attr("style", "cursor:hand")
-        $node.click(function () {
-            try {
-                var str = $(this).text().replace(/^【.*?】\s*/, '').replace(/。$/, '').replace('？', '').replace(/\s*（\d+\.\d+分）$/, '').replaceAll('javascript:void(0);', '').replaceAll("&nbsp;", '').replaceAll("，", ',').replaceAll(
-                    "。", '.').replaceAll("：", ':').replaceAll("；",
-                        ';').replaceAll("？", '?').replaceAll("（", '(').replaceAll("）", ')').replaceAll("“", '"')
-                    .replaceAll("”", '"').replaceAll("！", '!').replaceAll("-", ' ').replace(/(<([^>]+)>)/ig, '')
-                    .replace(/^\s+/ig, '').replace(/\s+$/ig, '')
-
-                GM_setClipboard(str)
-                $.toast({ type: 'success', content: str })
-            } catch (e) {
-                console.error(e)
-            }
-        })
-    }
-
-
-} else if (['/work/selectWorkQuestionYiPiYue'].includes(url)) {
-    console.log(location.href)
-}
-function relieve() {
-
-    UE.EventBase.prototype.fireEvent = function () {
-        return null
-    };
-    // $("body").removeAttr("onselectstart");
-    // $("html").css("user-select", "unset");
-
-    for (let ins in _self.UE.instants) {
-        // console.log(ins)
-        UE.instants[ins].removeListener('beforepaste', editorPaste);//过时了
-        // _self.UE.instants[ins].removeListener('beforepaste', unsafeWindow.myEditor_paste);
-        // _self.UE.instants[ins].removeListener('beforepaste', unsafeWindow.editorPaste);
-    }
-
-}
-
+})();
