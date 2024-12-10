@@ -20935,7 +20935,7 @@ var table = {
   "namespace": "wyn665817@163.com",
   "license": "MIT",
   "version": "20220515.1"
-};
+}||JSON.parse(GM_getResourceText('Table'));
 var match = {};
 for (var i = 19968; i < 40870; i++) { // 中文[19968, 40869]
     $tip = Typr.U.codeToGlyph(font, i);
