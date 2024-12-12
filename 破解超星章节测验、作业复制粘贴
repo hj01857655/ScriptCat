@@ -43,16 +43,20 @@
             UE.instants[ins].removeListener('beforepaste', myEditor_paste);
         }
     }
-    function enableConsoleLog() {
-        function createIframe() {
-            var iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            document.head.appendChild(iframe);
-            console.log(iframe.contentWindow.console)
-            return iframe.contentWindow.console;
-        }
+    function restoreConsoleLog() {
+        // 创建一个隐藏的 iframe
+        var iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
 
-        window.console = createIframe();
+        // 获取 iframe 的 window 和 console 对象
+        var iframeWindow = iframe.contentWindow;
+        var iframeConsole = iframeWindow.console;
+
+        // 直接替换全局 console 对象
+        window.console = iframeConsole;
+
+        
     }
     var scripts = $(document.getElementsByTagName('script'))
     for (let i = 0, l = scripts.length; i < l; i++) {
@@ -157,7 +161,7 @@
         //         aalert(msg);
         //     }
         // }, 10000)
-        enableConsoleLog();
+        restoreConsoleLog();
         // Function to extract and format question text
         function getQuestionText($questionBlock) {
             let questionText = $questionBlock.find('.Zy_TItle .newZy_TItle').parent().html().trim();
