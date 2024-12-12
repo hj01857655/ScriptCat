@@ -53,11 +53,27 @@
         var iframeWindow = iframe.contentWindow;
         var iframeConsole = iframeWindow.console;
 
-        // 直接替换全局 console 对象
-        window.console = iframeConsole;
+        // 备份原始的 console 对象
+        if (!window.originalConsole) {
+            window.originalConsole = Object.assign({}, console);
+        }
 
-        
+        // 检查是否禁用了 console.log
+        if (console.log !== iframeConsole.log) {
+            // 如果当前的 console.log 不等于 iframe 中的 console.log，则说明被禁用
+            window.console = iframeConsole;
+        }
+
+        // 测试恢复后的 console.log
+        console.log("Console log has been restored!");
+        $.toast({
+            type:"success",
+            content:"控制台输出限制已还原!"
+        })
     }
+
+    // 调用函数恢复 console.log
+    restoreConsoleLog();
     var scripts = $(document.getElementsByTagName('script'))
     for (let i = 0, l = scripts.length; i < l; i++) {
         if (scripts[i].src == 'https://detect.chaoxing.com/api/passport2-onlineinfo.js?key=true&refer=http://i.mooc.chaoxing.com' || scripts[i].src.indexOf('detect.chaoxing.com') != -1) {
@@ -161,7 +177,6 @@
         //         aalert(msg);
         //     }
         // }, 10000)
-        restoreConsoleLog();
         // Function to extract and format question text
         function getQuestionText($questionBlock) {
             let questionText = $questionBlock.find('.Zy_TItle .newZy_TItle').parent().html().trim();
