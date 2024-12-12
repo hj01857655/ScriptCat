@@ -38,10 +38,15 @@
         writable: true
     });
     function relieve() {
-
-        for (let ins in UE.instants) {
-            UE.instants[ins].removeListener('beforepaste', myEditor_paste);
-        }
+        $("body").removeAttr("onselectstart");
+        $("html").css("user-select", "unset");
+        $.each(UE.instants, function () {
+            var key = this.key;
+            this.ready(function () {
+                this.destroy();
+                UE.getEditor(key);
+            });
+        });
     }
     function restoreConsoleLog() {
         // 创建一个隐藏的 iframe
