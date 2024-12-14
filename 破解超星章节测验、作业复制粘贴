@@ -255,6 +255,7 @@
 
                         // Show success toast
                         $.toast({
+                            type:'success',
                             content: questionText.substring(0, 50) + '...', // Show first 50 characters of the copied text
                             delay: 1000
                         });
@@ -281,6 +282,7 @@
 
                         // Show success toast
                         $.toast({
+                            type:'success',
                             content: questionText.substring(0, 50) + '...', // Show first 50 characters of the copied text
                             delay: 1000
                         });
